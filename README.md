@@ -1,16 +1,18 @@
 Developed for a software engineering project, Firewalls-R-Us is a simple GUI for management of Linux firewalls written in python.
 FRU uses Uncomplicated Firewall (UFW) to implement rules, and renders several visualizations to aid in user understanding.
 
-![alt text](https://github.com/Owen-Cummings/Firewall-GUI-Prototype/blob/master/images/SankeyPlot.png "FW Rule Route Diagram")
-
-![alt text](https://github.com/Owen-Cummings/Firewall-GUI-Prototype/blob/master/images/Sunburst1.png "Allowed ports by IP")
-
 ## Current Functionality
 Only the following features have been implemented. More to come!
 ### View Rules / Rules Dashboard
 - Create rule [GET] => go to create rule page.
 - Delete rule [POST] => remove rule from database and reload page.
 - Logout => go to login page
+
+#### FW Rule Diagram
+![image failed to load](https://github.com/Owen-Cummings/Firewall-GUI-Prototype/blob/master/images/SankeyPlot.png "FW Rule Route Diagram")
+
+#### Allowed Ports by IP
+![image failed to load](https://github.com/Owen-Cummings/Firewall-GUI-Prototype/blob/master/images/Sunburst1.png "Allowed ports by IP")
 ### Login Page
 - Register [POST] => go back to login
 - Login [POST] => go to dashboard
@@ -27,11 +29,11 @@ Note: a default test account is available with the login admin:admin
 
 ## To do:
 - Finish already defined use cases
-- Integrate plotly locally using python rather than frontend JS
-- Permissions required for running program and modifying ufw
+- Integrate Plotly locally using python rather than frontend JS
+- Permissions required for running program and modifying UFW
     - Should not be running whole server as sudo
 - Outbound firewall rule creation
-    - update plotly sunburst diagram to reflect in/out rules
+    - update Plotly sunburst diagram to reflect in/out rules
 - Investigate how NAT may apply to rules
 - Redo parts of frontend with eloquent modern solution
     - Electron based desktop and web app?
@@ -44,4 +46,4 @@ Note: a default test account is available with the login admin:admin
 - create rule
 - Register user page
 - user interface
-- UFW api
+- UFW API
