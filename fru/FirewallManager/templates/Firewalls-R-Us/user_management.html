@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+{% load static %}
+<html>
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Firewalls R Us - User Management</title>
+
+
+</head>
+
+<style>
+
+  @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: url({% static 'FirewallManager/firewall.jpg' %}) no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+  }
+
+  form {
+    background-color: #3b4652;
+    margin-top: 307px;
+  }
+
+  td {
+    color: white;
+  }
+</style>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
+    <a class="navbar-brand ml-5" href="#">Firewalls R Us</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav ml-auto mr-5">
+        <a class="nav-item nav-link active" href="{% url 'docs' %}">Docs</a>
+        <a class="nav-item nav-link active" href="{% url 'user-logout' %}">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container text-center">
+    <div class="row mt-5">
+      <div class="col-lg-3 col-12 mr-lg-4 mb-3 bg-dark rounded p-4">
+            <p class="mt-2 text-left">Management Pane</p>
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-primary mb-2 rounded">
+                    <a href="{% url 'firewall-dashboard' %}" class="btn">Dashboard</a>
+                </li>
+                <li class="list-group-item list-group-item-primary mb-2 rounded">
+                    <a href="{% url 'firewall-rules-view' %}" class="btn">Firewall Rules</a>
+                </li>
+                <li class="list-group-item list-group-item-primary mb-2 rounded active">
+                    <a href="{% url 'users-view' %}" class="btn">Users</a>
+                </li>
+            </ul>
+        </div>
+      <div class="col-lg-8 col-12 ml-lg-4 bg-dark rounded p-4">
+        <h2 class="text-left">Users</h2>
+        <div class="row">
+          <span class="col-4 my-auto bg-dark text-left">Page 1 of 5</span>
+          <form class="col-4 my-auto offset-4 bg-dark" action="{% url 'users-search' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group m-0">
+              <input type="text" class="form-control" name="Search" placeholder="Search...">
+            </div>
+          </form>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <table class="table table-sm table-hover table-dark table-responsive mt-2">
+              <thead class="">
+                <tr>
+                    <td class="align-middle">UserID</td>
+                    <td class="align-middle">Username</td>
+                    <td class="align-middle">Email</td>
+                    <td class="align-middle">Phone</td>
+                    <td class="align-middle">Active</td>
+                    <td colspan="3" class="align-middle">Actions</td>
+                </tr>
+              </thead>
+              <tbody class="">
+                {% for profile in profiles %}
+                <tr>
+                    <td class="align-middle">{{ profile.user.id }}</td>
+                    <td class="align-middle">{{ profile.user.username }}</td>
+                    <td class="align-middle">{{ profile.user.email }}</td>
+                    <td class="align-middle">{{ profile.phone_num }}</td>
+                    <td class="align-middle">{{ profile.user.is_active }}</td>
+                    <td>
+                        <a href="{% url 'user-edit' %}?user={{ profile.user.id }}" class="btn btn-primary align-middle">Edit</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'user-delete' %}?user={{ profile.user.id }}" class="btn btn-primary align-middle">Delete</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'user-disable' %}?user={{ profile.user.id }}" class="btn btn-primary align-middle">Disable</a>
+                    </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+        <div class="row">
+          <a href="{% url 'user-create' %}" class="btn btn-success col-12">Create +</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+</body>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</html>

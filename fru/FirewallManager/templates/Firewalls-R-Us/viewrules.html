@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+{% load static %}
+<html>
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+				<!-- Bootstrap CSS -->
+				<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+					<title>Firewalls R Us - Firewall Management</title>
+					<!-- plotly library-->
+					<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+				</head>
+				<style>
+
+  @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: url({% static 'FirewallManager/firewall.jpg' %}) no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+  }
+
+  form {
+    background-color: #3b4652;
+    margin-top: 307px;
+  }
+
+  td {
+    color: white;
+  }
+</style>
+				<body>
+					<nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
+						<a class="navbar-brand ml-5" href="#">Firewalls R Us {{my_name}}</a>
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+							<div class="navbar-nav ml-auto mr-5">
+								<a class="nav-item nav-link active" href="{% url 'docs' %}">Docs</a>
+								<a class="nav-item nav-link active" href="{% url 'user-logout' %}">Logout</a>
+							</div>
+						</div>
+					</nav>
+					<div class="container text-center">
+						<div class="row mt-5">
+							<div class="col-lg-3 col-12 mr-lg-4 mb-3 bg-dark rounded p-4">
+								<p class="mt-2 text-left">Management Pane</p>
+								<ul class="list-group">
+                                    <li class="list-group-item list-group-item-primary mb-2 rounded">
+										<a href="{% url 'firewall-dashboard' %}" class="btn">Dashboard</a>
+									</li>
+									<li class="list-group-item list-group-item-primary mb-2 rounded active">
+										<a href="{% url 'firewall-rules-view' %}" class="btn">Firewall Rules</a>
+									</li>
+									<li class="list-group-item list-group-item-primary mb-2 rounded">
+										<a href="{% url 'users-view' %}" class="btn">Users</a>
+									</li>
+								</ul>
+							</div>
+							<div class="col-lg-8 col-12 ml-lg-4 bg-dark rounded p-4">
+								<h2 class="text-left">Firewall Rules</h2>
+								<div class="row">
+									<span class="col-4 my-auto bg-dark text-left">Page 1 of 5</span>
+									<form class="col-4 my-auto offset-4 bg-dark" action="{% url 'firewall-rules-search' %}" method="post">
+            {% csrf_token %}
+
+										<div class="form-group m-0">
+											<input type="text" class="form-control" name="Search" id="Search" placeholder="Search...">
+											</div>
+										</form>
+									</div>
+									<div class="row">
+										<div class="col-12">
+											<table class="table table-sm table-hover table-dark table-responsive mt-2">
+												<thead class="">
+													<tr>
+														<td class="align-middle">Rule #</td>
+														<td class="align-middle">Permission</td>
+														<td class="align-middle">Protocol</td>
+														<td class="align-middle">Destination IP</td>
+														<td class="align-middle">Destination Port</td>
+														<td class="align-middle">Source IP</td>
+														<td colspan="3" class="align-middle">Manage</td>
+													</tr>
+												</thead>
+												<tbody class="" id="tableContents">
+                {% for rule in rules %}
+
+													<tr>
+														<td class="align-middle">{{ rule.id }}</td>
+														<td class="align-middle">{{ rule.permission }}</td>
+														<td class="align-middle">{{ rule.protocol }}</td>
+														<td class="align-middle">{{ rule.to_ip }}</td>
+														<td class="align-middle">{{ rule.port_number }}</td>
+														<td class="align-middle">{{ rule.from_ip }}</td>
+														<td>
+															<a href="{% url 'firewall-rule-edit' %}?rule={{ rule.id }}" class="btn btn-primary align-middle">Edit</a>
+														</td>
+														<td>
+															<a href="{% url 'firewall-rule-delete' %}?id={{ rule.id }}&permission={{ rule.permission }}&protocol={{ rule.protocol }}&to_ip={{ rule.to_ip }}&port_number={{ rule.port_number }}&from_ip={{ rule.from_ip }}" class="btn btn-primary align-middle">Delete</a>
+														</td>
+														<td>
+															<a href="{% url 'firewall-rule-disable' %}?rule={{ rule.id }}" class="btn btn-primary align-middle">Disable</a>
+														</td>
+													</tr>
+                {% endfor %}
+
+
+												</tbody>
+											</table>
+										</div>
+									</div>
+									<div class="row">
+										<a href="{% url 'firewall-rule-create' %}" class="btn btn-success col-12 mb-1">Create Rule +</a>
+                                        <a href="{% url 'firewall-rule-import' %}" class="btn btn-success col-12 mb-1">Import Rule </a>
+										<a href="{% url 'firewall-rule-export' %}" class="btn btn-success col-12 mb-1">Export Rule ></a>
+									</div>
+									<div class="row" id="plotlygraph1" height="500px"></div>
+									<div class="row" id="plotlygraph2" height="500px"></div>
+								</div>
+							</div>
+						</div>
+						<header class="site-header"></header>
+						<main role="main" class="container"></main>
+<script>
+document.onload = visualizeRules();
+
+function visualizeRules(){
+    var localRuleIPs = [];
+    var localRulePorts = [];
+    var localRuleBlank = ["", ""];
+    var i = 0;
+{% for rule in rules %}
+    localRuleIPs[i] = " {{ rule.from_ip }}";
+    localRulePorts[i] =" {{ rule.port_number }}";
+    if("{{ rule.permission }}" == "allow"){
+        localRuleBlank[i+2] = "allow";
+    } else {
+        localRuleBlank[i+2] = "deny";
+    }
+    i++;
+{% endfor %}
+    let unique = [...new Set(localRuleIPs)];
+    unique.unshift("allow", "deny");
+    localRuleBlank = localRuleBlank.slice(0, unique.length);
+    var labels = unique.concat(localRulePorts);
+    var parents = localRuleBlank.concat(localRuleIPs);
+
+    var data = [{
+  type: "sunburst",
+  labels: labels,
+  parents: parents,
+  outsidetextfont: {size: 20, color: "#377eb8"},
+  //leaf: {opacity: 0.4},
+  marker: {line: {width: 2}},
+}];
+
+var layout = {
+      title: {
+    text:'Rules by Src. IP -> Dest. Port',
+    font: {
+      family: 'Courier New, monospace',
+      size: 20,
+      color: "#FFFFFF"
+    },
+  },
+  font: {size: 15, x: 0, color: "#FFFFFF"},
+  margin: {l: 0, r: 0, b: 0, t:35},
+  sunburstcolorway:["#636efa","#ef553b","#00cc96"],
+  paper_bgcolor: "#343a40",
+    autosize: true
+};
+    Plotly.newPlot('plotlygraph2', data, layout, {displaylogo: false, responsive: true});
+}
+
+</script>
+<script>
+document.onload = visualizeRules();
+
+function visualizeRules(){
+    var localRuleIPs = [],
+    		localRulePorts = [],
+				localRuleIPSource = [],
+				localRuleIPDest = [],
+				localRuleInfo = [],
+				empty = [],
+				colours = [];
+    var i = 0;
+    var j = 0;
+{% for rule in rules %}
+    if(localRuleIPs.includes("{{ rule.from_ip }}")){
+        localRuleIPSource[i] = localRuleIPs.indexOf("{{ rule.from_ip }}");
+        localRuleInfo[i] = "{{ rule.permission }} {{ rule.from_ip }} to {{ rule.to_ip }} on port {{ rule.port_number }}({{ rule.protocol }})";
+        j++;
+    } else {
+        localRuleIPs[j]="{{ rule.from_ip }}";
+        localRuleIPSource[i] = j;
+        localRuleInfo[i] = "{{ rule.permission }} {{ rule.from_ip }} to {{ rule.to_ip }} on port {{ rule.port_number }}({{ rule.protocol }})";
+        j++;
+    }
+    if(localRuleIPs.includes("{{ rule.to_ip }}")){
+        localRuleIPDest[i] = localRuleIPs.indexOf("{{ rule.to_ip }}");
+        localRuleInfo[i] = "{{ rule.permission }} {{ rule.from_ip }} to {{ rule.to_ip }} on port {{ rule.port_number }}({{ rule.protocol }})";
+        j++;
+    } else {
+        localRuleIPs[j] ="{{ rule.to_ip }}";
+        localRuleIPDest[i] = j;
+        localRuleInfo[i] = "{{ rule.permission }} {{ rule.from_ip }} to {{ rule.to_ip }} on port {{ rule.port_number }}({{ rule.protocol }})";
+        j++;
+    }
+    if("{{ rule.permission }}" == "allow"){
+        colours[i] = "darkgreen";
+    } else {
+        colours[i] = "crimson";
+    }
+    localRuleIPs[j] = "{{ rule.protocol }} {{ rule.port_number }}";
+    localRulePorts[i] = j;
+    empty[i] = 1;
+    j++;
+    i++;
+{% endfor %}
+
+    localRuleIPSource = localRuleIPSource.concat(localRulePorts);
+    localRulePorts = localRulePorts.concat(localRuleIPDest);
+    localRuleInfo = localRuleInfo.concat(localRuleInfo);
+    empty = empty.concat(empty);
+    colours = colours.concat(colours);
+
+var data = {
+  type: "sankey",
+  orientation: "h",
+  node: {
+    pad: 15,
+    thickness: 40,
+    line: {
+      color: "black",
+      width: 2
+    },
+   label: localRuleIPs,
+   color: "lightslategray"
+      },
+
+  link: {
+    width: 10,
+    source: localRuleIPSource,
+    target: localRulePorts,
+    value:  empty,
+    label: localRuleInfo,
+    color: colours
+  }
+}
+
+var data = [data];
+
+var layout = {
+  title: {
+      text: 'Firewall Rules',
+      size: 20
+  },
+  font: {
+    size: 15,
+    family: 'Courier New, monospace',
+    color: "white"
+
+  },
+    plot_bgcolor: '#343a40',
+  paper_bgcolor: '#343a40'
+
+};
+    Plotly.react('plotlygraph1', data, layout, {displaylogo: false});
+}
+
+</script>
+					</body>
+					<!-- Optional JavaScript -->
+					<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+					<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+					<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+					<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+				</html>

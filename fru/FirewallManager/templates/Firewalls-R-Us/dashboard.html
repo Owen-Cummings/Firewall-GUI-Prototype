@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+{% load static %}
+<html>
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+				<!-- Bootstrap CSS -->
+				<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+					<title>Firewalls R Us - Firewall Management</title>
+					<!-- plotly library-->
+					<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+				</head>
+				<style>
+
+  @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: url({% static 'FirewallManager/firewall.jpg' %}) no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+  }
+
+  form {
+    background-color: #3b4652;
+    margin-top: 307px;
+  }
+
+  td {
+    color: white;
+  }
+</style>
+				<body>
+					<nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded">
+						<a class="navbar-brand ml-5" href="#">Firewalls R Us {{my_name}}</a>
+						<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+							<div class="navbar-nav ml-auto mr-5">
+								<a class="nav-item nav-link active" href="{% url 'docs' %}">Docs</a>
+								<a class="nav-item nav-link active" href="{% url 'user-logout' %}">Logout</a>
+							</div>
+						</div>
+					</nav>
+					<div class="container text-center">
+						<div class="row mt-5 wide">
+							<div class="col-lg-3 col-12 mr-lg-4 mb-3 bg-dark rounded p-4">
+								<p class="mt-2 text-left">Management Pane</p>
+								<ul class="list-group">
+									<li class="list-group-item list-group-item-primary mb-2 rounded active">
+										<a href="{% url 'firewall-dashboard' %}" class="btn">Dashboard</a>
+									</li>
+									<li class="list-group-item list-group-item-primary mb-2 rounded">
+										<a href="{% url 'firewall-rules-view' %}" class="btn">Firewall Rules</a>
+									</li>
+									<li class="list-group-item list-group-item-primary mb-2 rounded">
+										<a href="{% url 'users-view' %}" class="btn">Users</a>
+									</li>
+								</ul>
+							</div>
+							<div class="col-lg-8 col-12 ml-lg-4 bg-dark rounded p-4">
+								<h2 class="text-left">Firewall Rules</h2>
+								<div class="row">
+									<span class="col-4 my-auto bg-dark text-left">Page 1 of 5</span>
+								</form>
+							</div>
+							<div class="row">
+								<div class="col-20 ">
+									<table class="table table-lf table-hover table-dark table-responsive mt-2">
+										<tbody class="" id="tableContents">
+											<tr>
+												<div id="any"></div>
+												<div id="allows"></div>
+												<div id="denies"></div>
+											</tr>
+											<tr></tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<header class="site-header"></header>
+				<main role="main" class="container"></main>
+<script>
+window.onload = initialize;
+function initialize() {
+	visualizeRules("allows");
+	visualizeRules("any");
+	visualizeRules("denies");
+}
+function visualizeRules(type) {
+    var localRuleIPs = [],
+				localRulePorts = [],
+				localRuleBlank = [];
+    var i = 0;
+    {% for rule in rules %}
+				if(type == "any"){
+					localRuleIPs[i] = "{{ rule.from_ip }}";
+					localRulePorts[i] = "{{ rule.port_number }}";
+					localRuleBlank[i + 2] = "{{ rule.permission }}";
+					i++;
+				} else if(type == "allows") {
+					if ("{{ rule.permission }}" == "allow") {
+							localRuleBlank[i + 1] = "allow";
+							localRuleIPs[i] = "{{ rule.from_ip }}";
+							localRulePorts[i] = " {{ rule.port_number }}";
+							i++;
+					}
+				} else if(type == "denies") {
+					if ("{{ rule.permission }}" == "deny") {
+	            localRuleBlank[i + 1] = "deny";
+	            localRuleIPs[i] = "{{ rule.from_ip }}";
+	            localRulePorts[i] = "{{ rule.port_number }}";
+							i++;
+	        }
+				}
+    {% endfor %}
+    let unique = [...new Set(localRuleIPs)];
+		if(type == "any"){
+			localRuleBlank.unshift["", ""];
+			unique.unshift("allow", "deny");
+		} else if(type == "allows") {
+			localRuleBlank.unshift[""];
+			unique.unshift("allow");
+		} else if(type == "denies") {
+			localRuleBlank.unshift[""];
+			unique.unshift("deny");
+		}
+
+    localRuleBlank = localRuleBlank.slice(0, unique.length);
+    var labels = unique.concat(localRulePorts);
+    var parents = localRuleBlank.concat(localRuleIPs);
+
+    var data = [{
+        type: "sunburst",
+        labels: labels,
+        parents: parents,
+        outsidetextfont: {size: 20, color: "#377eb8"},
+        leaf: {opacity: 0.9},
+        marker: {line: {width: 2}},
+    }];
+
+    var layout = {
+      title: {
+    text:'Rules by Src. IP -> Dest. Port',
+    font: {
+      family: 'Courier New, monospace',
+      size: 20,
+      color: "#FFFFFF"
+    },
+  },
+  font: {size: 15, x: 0, color: "#FFFFFF"},
+  margin: {l: 0, r: 0, b: 0, t:35},
+  sunburstcolorway:["#636efa","#ef553b","#00cc96"],
+  paper_bgcolor: "#343a40",
+    autosize: true
+};
+    Plotly.newPlot(type, data, layout, {displaylogo: false, responsive: true});
+}
+</script>
+
+			</body>
+			<!-- Optional JavaScript -->
+			<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+			<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+			<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		</html>
