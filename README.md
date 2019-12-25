@@ -2,7 +2,7 @@ Developed for a software engineering project, Firewalls-R-Us is a simple GUI for
 FRU uses Uncomplicated Firewall (UFW) to implement rules, and renders several visualizations to aid in user understanding.
 
 ## Current Functionality
-Only the following 
+Only the following features have been implemented. More to come!
 ### View Rules / Rules Dashboard
 - Create rule [GET] => go to create rule page.
 - Delete rule [POST] => remove rule from database and reload page.
