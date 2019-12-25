@@ -1,6 +1,10 @@
 Developed for a software engineering project, Firewalls-R-Us is a simple GUI for management of Linux firewalls written in python.
 FRU uses Uncomplicated Firewall (UFW) to implement rules, and renders several visualizations to aid in user understanding.
 
+![alt text](https://github.com/Owen-Cummings/Firewall-GUI-Prototype/blob/master/images/SankeyPlot.png "FW Rule Route Diagram")
+
+![alt text](https://github.com/Owen-Cummings/Firewall-GUI-Prototype/blob/master/images/Sunburst1.png "Allowed ports by IP")
+
 ## Current Functionality
 Only the following features have been implemented. More to come!
 ### View Rules / Rules Dashboard
@@ -11,7 +15,7 @@ Only the following features have been implemented. More to come!
 - Register [POST] => go back to login
 - Login [POST] => go to dashboard
 ### Create Rule page [GET]
-- cancel [GET] 
+- cancel [GET]
 - create rule [POST] => create the rule, add to DB, add to UFW, redirect back to dashboard
 
 ##  Usage Guide
