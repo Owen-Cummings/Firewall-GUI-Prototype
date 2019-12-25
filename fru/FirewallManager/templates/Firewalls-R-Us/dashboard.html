@@ -64,7 +64,7 @@
 							<div class="col-lg-8 col-12 ml-lg-4 bg-dark rounded p-4">
 								<h2 class="text-left">Firewall Rules</h2>
 								<div class="row">
-									<span class="col-4 my-auto bg-dark text-left">Page 1 of 5</span>
+									<span class="col-4 my-auto bg-dark text-left">Page 1 of 3</span>
 								</form>
 							</div>
 							<div class="row">
@@ -72,10 +72,15 @@
 									<table class="table table-lf table-hover table-dark table-responsive mt-2">
 										<tbody class="" id="tableContents">
 											<tr>
-												<div id="any"></div>
+												<div id="any">No Rules Implemented!</div>
 												<div id="allows"></div>
 												<div id="denies"></div>
 											</tr>
+											{% if rules|length < 1 %}
+												<script>
+												window.onload = initialize;
+												</script>
+											{% endif %}
 											<tr></tr>
 										</tbody>
 									</table>
@@ -87,11 +92,11 @@
 				<header class="site-header"></header>
 				<main role="main" class="container"></main>
 <script>
-window.onload = initialize;
+//window.onload = initialize;
 function initialize() {
-	visualizeRules("allows");
-	visualizeRules("any");
-	visualizeRules("denies");
+		visualizeRules("allows");
+		visualizeRules("any");
+		visualizeRules("denies");
 }
 function visualizeRules(type) {
     var localRuleIPs = [],

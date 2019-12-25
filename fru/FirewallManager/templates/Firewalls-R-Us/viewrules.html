@@ -64,7 +64,7 @@
 							<div class="col-lg-8 col-12 ml-lg-4 bg-dark rounded p-4">
 								<h2 class="text-left">Firewall Rules</h2>
 								<div class="row">
-									<span class="col-4 my-auto bg-dark text-left">Page 1 of 5</span>
+									<span class="col-4 my-auto bg-dark text-left">Page 2 of 3</span>
 									<form class="col-4 my-auto offset-4 bg-dark" action="{% url 'firewall-rules-search' %}" method="post">
             {% csrf_token %}
 
@@ -98,14 +98,16 @@
 														<td class="align-middle">{{ rule.port_number }}</td>
 														<td class="align-middle">{{ rule.from_ip }}</td>
 														<td>
-															<a href="{% url 'firewall-rule-edit' %}?rule={{ rule.id }}" class="btn btn-primary align-middle">Edit</a>
-														</td>
-														<td>
 															<a href="{% url 'firewall-rule-delete' %}?id={{ rule.id }}&permission={{ rule.permission }}&protocol={{ rule.protocol }}&to_ip={{ rule.to_ip }}&port_number={{ rule.port_number }}&from_ip={{ rule.from_ip }}" class="btn btn-primary align-middle">Delete</a>
+														</td>
+														<!--
+														<td>
+															<a href="{% url 'firewall-rule-edit' %}?rule={{ rule.id }}" class="btn btn-primary align-middle">Edit</a>
 														</td>
 														<td>
 															<a href="{% url 'firewall-rule-disable' %}?rule={{ rule.id }}" class="btn btn-primary align-middle">Disable</a>
 														</td>
+														-->
 													</tr>
                 {% endfor %}
 
@@ -116,8 +118,10 @@
 									</div>
 									<div class="row">
 										<a href="{% url 'firewall-rule-create' %}" class="btn btn-success col-12 mb-1">Create Rule +</a>
-                                        <a href="{% url 'firewall-rule-import' %}" class="btn btn-success col-12 mb-1">Import Rule </a>
+                    <!--
+										<a href="{% url 'firewall-rule-import' %}" class="btn btn-success col-12 mb-1">Import Rule </a>
 										<a href="{% url 'firewall-rule-export' %}" class="btn btn-success col-12 mb-1">Export Rule ></a>
+										-->
 									</div>
 									<div class="row" id="plotlygraph1" height="500px"></div>
 									<div class="row" id="plotlygraph2" height="500px"></div>
