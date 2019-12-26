@@ -72,16 +72,22 @@
 									<table class="table table-lf table-hover table-dark table-responsive mt-2">
 										<tbody class="" id="tableContents">
 											<tr>
-												<div id="any">No Rules Implemented!</div>
+												<div id="any"></div>
 												<div id="allows"></div>
 												<div id="denies"></div>
 											</tr>
-											{% if rules|length < 1 %}
+											{% if rules|length > 0 %}
 												<script>
 												window.onload = initialize;
+												function initialize() {
+														visualizeRules("allows");
+														visualizeRules("any");
+														visualizeRules("denies");
+												}
 												</script>
+												{% else %}
+												<script>document.getElementById('any').innerHTML = "No rules implemented";</script>
 											{% endif %}
-											<tr></tr>
 										</tbody>
 									</table>
 								</div>
@@ -93,15 +99,11 @@
 				<main role="main" class="container"></main>
 <script>
 //window.onload = initialize;
-function initialize() {
-		visualizeRules("allows");
-		visualizeRules("any");
-		visualizeRules("denies");
-}
 function visualizeRules(type) {
     var localRuleIPs = [],
 				localRulePorts = [],
-				localRuleBlank = [];
+				localRuleBlank = [],
+				colourway = [];
     var i = 0;
     {% for rule in rules %}
 				if(type == "any"){
@@ -129,12 +131,15 @@ function visualizeRules(type) {
 		if(type == "any"){
 			localRuleBlank.unshift["", ""];
 			unique.unshift("allow", "deny");
+			colourway = ["#636efa","#ef553b","#00cc96"];
 		} else if(type == "allows") {
 			localRuleBlank.unshift[""];
 			unique.unshift("allow");
-		} else if(type == "denies") {
+			colourway = ["#636efa"];
+		} else {
 			localRuleBlank.unshift[""];
 			unique.unshift("deny");
+			colourway = ["#ef553b"];
 		}
 
     localRuleBlank = localRuleBlank.slice(0, unique.length);
@@ -161,7 +166,7 @@ function visualizeRules(type) {
   },
   font: {size: 15, x: 0, color: "#FFFFFF"},
   margin: {l: 0, r: 0, b: 0, t:35},
-  sunburstcolorway:["#636efa","#ef553b","#00cc96"],
+  sunburstcolorway: colourway,
   paper_bgcolor: "#343a40",
     autosize: true
 };
