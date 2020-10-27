@@ -1,7 +1,7 @@
 numpy==1.16.2
 keyring==18.0.1
 Django==2.2.8
-cryptography==2.8
+cryptography==3.2
 django-phonenumber-field==3.0.1
 phonenumbers
 brotli==1.0.7
