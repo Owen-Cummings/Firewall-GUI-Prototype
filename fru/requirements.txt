@@ -1,6 +1,6 @@
 numpy==1.16.2
 keyring==18.0.1
-Django==2.2.8
+Django==2.2.20
 cryptography==2.8
 django-phonenumber-field==3.0.1
 phonenumbers
