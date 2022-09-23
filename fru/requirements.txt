@@ -12,7 +12,7 @@ lockfile==0.12.2
 lxml==4.4.2
 mypy_extensions==0.4.3
 ordereddict==1.1
-protobuf==3.11.2
+protobuf==3.18.3
 pyOpenSSL==19.1.0
 toml==0.10.0
 usercustomize==1.0.0
